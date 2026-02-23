@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "35197657399",
+    "project_id": "asiobra",
+    "storage_bucket": "asiobra.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35197657399:android:9e5f5f0af99ee9978e3ab2",
+        "android_client_info": {
+          "package_name": "com.example.asi_obra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBTa19LoWmry7dM_Ks-z_1DtO0h8sbOmro"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
