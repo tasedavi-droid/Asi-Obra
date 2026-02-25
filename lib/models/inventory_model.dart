@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class InventoryModel {
-  final String  id;
-  final String  productId;
-  final String? productName;
-  final String  batchNumber;
-  final int     initialQuantity;
-  final int     currentQuantity;
+  final String    id;
+  final String    productId;       
+  final String?   productName;     
+  final String    batchNumber;
+  final int       initialQuantity;
+  final int       currentQuantity;
   final DateTime? expirationDate;
-  final String  lastEditedBy;
-  final String? lastEditedByName;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String    lastEditedBy;
+  final String?   lastEditedByName;
+  final DateTime  createdAt;
+  final DateTime  updatedAt;
 
   const InventoryModel({
     required this.id,
@@ -27,6 +27,7 @@ class InventoryModel {
     required this.updatedAt,
   });
 
+
   bool get isEmpty     => currentQuantity <= 0;
   bool get isLow       => !isEmpty && currentQuantity <= (initialQuantity * 0.2).ceil();
   bool get isExpired   => expirationDate != null && expirationDate!.isBefore(DateTime.now());
@@ -36,9 +37,8 @@ class InventoryModel {
     return diff >= 0 && diff <= 30;
   }
 
-  double get stockPercent => initialQuantity > 0
-      ? (currentQuantity / initialQuantity).clamp(0.0, 1.0)
-      : 0;
+  double get stockPercent =>
+      initialQuantity > 0 ? (currentQuantity / initialQuantity).clamp(0.0, 1.0) : 0;
 
   factory InventoryModel.fromFirestore(DocumentSnapshot doc) {
     final d = doc.data() as Map<String, dynamic>;
@@ -57,19 +57,21 @@ class InventoryModel {
     );
   }
 
-  Map<String, dynamic> toMap() => {
-    'productId':        productId,
-    'productName':      productName,
-    'batchNumber':      batchNumber,
-    'initialQuantity':  initialQuantity,
-    'currentQuantity':  currentQuantity,
-    'expirationDate':   expirationDate != null
-        ? Timestamp.fromDate(expirationDate!) : null,
-    'lastEditedBy':     lastEditedBy,
-    'lastEditedByName': lastEditedByName,
-    'createdAt':        Timestamp.fromDate(createdAt),
-    'updatedAt':        Timestamp.fromDate(updatedAt),
-  };
+  Map<String, dynamic> toMap() {
+    final exp = expirationDate;
+    return {
+      'productId':        productId,
+      'productName':      productName,
+      'batchNumber':      batchNumber,
+      'initialQuantity':  initialQuantity,
+      'currentQuantity':  currentQuantity,
+      'expirationDate':   exp != null ? Timestamp.fromDate(exp) : null,
+      'lastEditedBy':     lastEditedBy,
+      'lastEditedByName': lastEditedByName,
+      'createdAt':        Timestamp.fromDate(createdAt),
+      'updatedAt':        Timestamp.fromDate(updatedAt),
+    };
+  }
 
   InventoryModel copyWith({
     String?   id,
@@ -83,17 +85,18 @@ class InventoryModel {
     String?   lastEditedByName,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) => InventoryModel(
-    id:               id               ?? this.id,
-    productId:        productId        ?? this.productId,
-    productName:      productName      ?? this.productName,
-    batchNumber:      batchNumber      ?? this.batchNumber,
-    initialQuantity:  initialQuantity  ?? this.initialQuantity,
-    currentQuantity:  currentQuantity  ?? this.currentQuantity,
-    expirationDate:   expirationDate   ?? this.expirationDate,
-    lastEditedBy:     lastEditedBy     ?? this.lastEditedBy,
-    lastEditedByName: lastEditedByName ?? this.lastEditedByName,
-    createdAt:        createdAt        ?? this.createdAt,
-    updatedAt:        updatedAt        ?? this.updatedAt,
-  );
+  }) =>
+      InventoryModel(
+        id:               id               ?? this.id,
+        productId:        productId        ?? this.productId,
+        productName:      productName      ?? this.productName,
+        batchNumber:      batchNumber      ?? this.batchNumber,
+        initialQuantity:  initialQuantity  ?? this.initialQuantity,
+        currentQuantity:  currentQuantity  ?? this.currentQuantity,
+        expirationDate:   expirationDate   ?? this.expirationDate,
+        lastEditedBy:     lastEditedBy     ?? this.lastEditedBy,
+        lastEditedByName: lastEditedByName ?? this.lastEditedByName,
+        createdAt:        createdAt        ?? this.createdAt,
+        updatedAt:        updatedAt        ?? this.updatedAt,
+      );
 }
