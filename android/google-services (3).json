@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "940025687222",
+    "project_id": "material-construcao-d4d93",
+    "storage_bucket": "material-construcao-d4d93.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:940025687222:android:7b6ebbf18763d6b56f4a17",
+        "android_client_info": {
+          "package_name": "com.example.asi_obra"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "940025687222-fs5dtdq00d8044ee63cmhcf97g4nes3t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoR3tT-8e-gbw0n04fzq7IlgSVnbSBIFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "940025687222-fs5dtdq00d8044ee63cmhcf97g4nes3t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
