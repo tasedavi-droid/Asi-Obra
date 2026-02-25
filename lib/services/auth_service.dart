@@ -57,7 +57,7 @@ class AuthService {
     return UserModel.fromFirestore(doc);
   }
 
-  /// Envia e-mail de redefinição e salva o código no Firestore (campo passwordReset)
+  /// Envia e-mail de redefinição e salva o código no Firestore 
   Future<void> sendPasswordReset(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
 

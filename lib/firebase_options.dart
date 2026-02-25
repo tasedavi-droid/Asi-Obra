@@ -41,48 +41,50 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA8qI5e8dco25kYDWRFcxVU0GGGMSfD078',
-    appId: '1:35197657399:web:7103931aa07959148e3ab2',
-    messagingSenderId: '35197657399',
-    projectId: 'asiobra',
-    authDomain: 'asiobra.firebaseapp.com',
-    storageBucket: 'asiobra.firebasestorage.app',
-    measurementId: 'G-LKH6LJ7H5J',
+    apiKey: 'AIzaSyCGXZeWEJkzRraOEFAiFKoN-SpZpMlSgvk',
+    appId: '1:940025687222:web:9558ee82631f16d66f4a17',
+    messagingSenderId: '940025687222',
+    projectId: 'material-construcao-d4d93',
+    authDomain: 'material-construcao-d4d93.firebaseapp.com',
+    storageBucket: 'material-construcao-d4d93.firebasestorage.app',
+    measurementId: 'G-WTGVYYT5BS',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBTa19LoWmry7dM_Ks-z_1DtO0h8sbOmro',
-    appId: '1:35197657399:android:9e5f5f0af99ee9978e3ab2',
-    messagingSenderId: '35197657399',
-    projectId: 'asiobra',
-    storageBucket: 'asiobra.firebasestorage.app',
+    apiKey: 'AIzaSyDoR3tT-8e-gbw0n04fzq7IlgSVnbSBIFo',
+    appId: '1:940025687222:android:7b6ebbf18763d6b56f4a17',
+    messagingSenderId: '940025687222',
+    projectId: 'material-construcao-d4d93',
+    storageBucket: 'material-construcao-d4d93.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBir4Gp2B_v3VfRUEJwaW5cwVBDhc34SXA',
-    appId: '1:35197657399:ios:5fb9aaa1e9bcbbfd8e3ab2',
-    messagingSenderId: '35197657399',
-    projectId: 'asiobra',
-    storageBucket: 'asiobra.firebasestorage.app',
+    apiKey: 'AIzaSyCwJ1vJqBbeMWbiEpFH997KbeYd_6yxTTI',
+    appId: '1:940025687222:ios:ba1362bde9c4a3496f4a17',
+    messagingSenderId: '940025687222',
+    projectId: 'material-construcao-d4d93',
+    storageBucket: 'material-construcao-d4d93.firebasestorage.app',
+    iosClientId: '940025687222-qe48lct9400p3hnf7k26asf7f7bb9far.apps.googleusercontent.com',
     iosBundleId: 'com.example.asiObra',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBir4Gp2B_v3VfRUEJwaW5cwVBDhc34SXA',
-    appId: '1:35197657399:ios:5fb9aaa1e9bcbbfd8e3ab2',
-    messagingSenderId: '35197657399',
-    projectId: 'asiobra',
-    storageBucket: 'asiobra.firebasestorage.app',
+    apiKey: 'AIzaSyCwJ1vJqBbeMWbiEpFH997KbeYd_6yxTTI',
+    appId: '1:940025687222:ios:ba1362bde9c4a3496f4a17',
+    messagingSenderId: '940025687222',
+    projectId: 'material-construcao-d4d93',
+    storageBucket: 'material-construcao-d4d93.firebasestorage.app',
+    iosClientId: '940025687222-qe48lct9400p3hnf7k26asf7f7bb9far.apps.googleusercontent.com',
     iosBundleId: 'com.example.asiObra',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyA8qI5e8dco25kYDWRFcxVU0GGGMSfD078',
-    appId: '1:35197657399:web:fae1554905c193f08e3ab2',
-    messagingSenderId: '35197657399',
-    projectId: 'asiobra',
-    authDomain: 'asiobra.firebaseapp.com',
-    storageBucket: 'asiobra.firebasestorage.app',
-    measurementId: 'G-MZBFZPNM94',
+    apiKey: 'AIzaSyCGXZeWEJkzRraOEFAiFKoN-SpZpMlSgvk',
+    appId: '1:940025687222:web:e4ce8230da9857916f4a17',
+    messagingSenderId: '940025687222',
+    projectId: 'material-construcao-d4d93',
+    authDomain: 'material-construcao-d4d93.firebaseapp.com',
+    storageBucket: 'material-construcao-d4d93.firebasestorage.app',
+    measurementId: 'G-S4G68E0578',
   );
 }
