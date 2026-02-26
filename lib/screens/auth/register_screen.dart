@@ -8,7 +8,7 @@ import '../../core/utils/validators.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/ao_button.dart';
 import '../../widgets/common/ao_text_field.dart';
-import 'login_screen.dart';
+import '../../widgets/common/auth_header.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -83,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 52),
-                  _AuthHeader(),
+                  const AuthHeader(),
                   const SizedBox(height: 40),
                   Text(AppStrings.register,
                     style: Theme.of(context).textTheme.displayMedium),

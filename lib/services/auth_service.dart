@@ -9,13 +9,14 @@ class AuthService {
   User? get currentFirebaseUser => _auth.currentUser;
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Gera código de funcionário sequencial — ex: AO0001
+  // Gera código de crachá sequencial — ex: AO0001, AO0002...
   Future<String> _generateEmployeeCode() async {
     final snap  = await _firestore.collection('users').get();
     final count = snap.docs.length + 1;
     return 'AO${count.toString().padLeft(4, '0')}';
   }
 
+  // ── Cadastro ─────────────────────────────────────────────────
   Future<UserModel> register({
     required String name,
     required String email,
@@ -31,24 +32,33 @@ class AuthService {
       id:           uid,
       name:         name,
       email:        email,
-      role:         UserRole.leitor,
+      role:         UserRole.leitor, // novos usuários sempre começam como Leitor
       employeeCode: code,
+      isActive:     true,
       createdAt:    now,
     );
     await _firestore.collection('users').doc(uid).set(user.toMap());
     return user;
   }
 
+  // ── Login ─────────────────────────────────────────────────────
   Future<UserModel> login({
     required String email,
     required String password,
   }) async {
     await _auth.signInWithEmailAndPassword(email: email, password: password);
-    return await getUser();
+    final user = await getUser();
+    if (!user.isActive) {
+      await _auth.signOut();
+      throw Exception('Conta desativada. Entre em contato com o administrador.');
+    }
+    return user;
   }
 
+  // ── Logout ────────────────────────────────────────────────────
   Future<void> logout() => _auth.signOut();
 
+  // ── Buscar usuário logado ─────────────────────────────────────
   Future<UserModel> getUser() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) throw Exception('Não autenticado');
@@ -57,11 +67,11 @@ class AuthService {
     return UserModel.fromFirestore(doc);
   }
 
-  /// Envia e-mail de redefinição e salva o código no Firestore 
+  // ── Redefinição de senha ──────────────────────────────────────
+  // Envia e-mail e salva o código no Firestore (campo passwordReset)
   Future<void> sendPasswordReset(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
 
-    // Registra no documento do usuário que uma redefinição foi solicitada
     final snap = await _firestore
         .collection('users')
         .where('email', isEqualTo: email)
@@ -69,28 +79,37 @@ class AuthService {
         .get();
 
     if (snap.docs.isNotEmpty) {
-      final resetCode = 'RESET_${DateTime.now().millisecondsSinceEpoch}';
-      await snap.docs.first.reference.update({
-        'passwordReset': resetCode,
-      });
+      final code = 'RESET_${DateTime.now().millisecondsSinceEpoch}';
+      await snap.docs.first.reference.update({'passwordReset': code});
     }
   }
 
-  /// Limpa o código de reset após a senha ser redefinida com sucesso
+  // Limpa o código de reset após nova senha definida
   Future<void> clearPasswordReset(String userId) async {
     await _firestore.collection('users').doc(userId).update({
-      'passwordReset': null,
+      'passwordReset':   null,
+      'passwordChanged': Timestamp.fromDate(DateTime.now()),
     });
   }
 
+  // ── Admin: listar todos os usuários ──────────────────────────
   Future<List<UserModel>> getAllUsers() async {
-    final snap = await _firestore.collection('users').orderBy('name').get();
+    final snap = await _firestore
+        .collection('users')
+        .orderBy('name')
+        .get();
     return snap.docs.map(UserModel.fromFirestore).toList();
   }
 
+  // ── Admin: alterar role ───────────────────────────────────────
   Future<void> updateRole(String userId, UserRole role) =>
       _firestore.collection('users').doc(userId).update({'role': role.name});
 
+  // ── Admin: ativar/desativar conta ─────────────────────────────
+  Future<void> setActive(String userId, bool active) =>
+      _firestore.collection('users').doc(userId).update({'isActive': active});
+
+  // ── Editar nome próprio ───────────────────────────────────────
   Future<void> updateName(String userId, String name) =>
       _firestore.collection('users').doc(userId).update({'name': name});
 }

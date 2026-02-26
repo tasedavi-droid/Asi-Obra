@@ -8,6 +8,7 @@ import '../../core/utils/validators.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/ao_button.dart';
 import '../../widgets/common/ao_text_field.dart';
+import '../../widgets/common/auth_header.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -88,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 52),
-                  _AuthHeader(),
+                  const AuthHeader(),
                   const SizedBox(height: 40),
                   Text(AppStrings.login,
                     style: Theme.of(context).textTheme.displayMedium),
@@ -161,36 +162,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ]),
-    );
-  }
-}
-
-// Widget de cabeçalho compartilhado entre Login e Cadastro
-class _AuthHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Image.asset(
-          'assets/images/logo.png',
-          height: 52,
-          errorBuilder: (_, __, ___) => Container(
-            width: 52, height: 52,
-            decoration: BoxDecoration(
-              color: AppColors.vermelho,
-              borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.home_repair_service_rounded,
-                color: AppColors.branco, size: 28),
-          ),
-        ),
-        const SizedBox(height: 14),
-        Text(AppStrings.appTagline,
-          style: GoogleFonts.publicSans(
-            fontSize: 22, fontWeight: FontWeight.w700,
-            color: isDark ? AppColors.perola : AppColors.azulEscuro02)),
-      ],
     );
   }
 }

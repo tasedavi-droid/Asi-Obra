@@ -145,15 +145,12 @@ class AppTheme {
         hintStyle:  GoogleFonts.publicSans(fontSize: 14, fontWeight: FontWeight.w300, color: textHint),
         errorStyle: GoogleFonts.publicSans(fontSize: 12, color: AppColors.vermelho),
       ),
-      cardTheme: CardTheme(
-        color:     card,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side:         BorderSide(color: border),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      ),
+      cardTheme: CardThemeData(
+     color:     card,
+      elevation: 0,
+      shape:     RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin:    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primary,
         foregroundColor: AppColors.branco,
