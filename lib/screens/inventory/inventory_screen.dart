@@ -16,12 +16,42 @@ class InventoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final prov = context.watch<InventoryProvider>();
-    final auth = context.watch<AuthProvider>();
+    final prov  = context.watch<InventoryProvider>();
+    final auth  = context.watch<AuthProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(title: const Text(AppStrings.inventory)),
       body: Column(children: [
+
+        // ── Banner permissão para LEITOR ──────────────────────
+        if (!auth.canEdit)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.azulArdosia.withOpacity(0.10),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                  color: AppColors.azulArdosia.withOpacity(0.30))),
+            child: Row(children: [
+              const Icon(Icons.info_outline,
+                  size: 16, color: AppColors.azulArdosia),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Você está no modo Leitor. Apenas Estoquistas e Administradores podem gerenciar o estoque.',
+                  style: GoogleFonts.publicSans(
+                    fontSize: 12, fontWeight: FontWeight.w300,
+                    color: isDark
+                        ? AppColors.perola.withOpacity(0.75)
+                        : AppColors.azulArdosia)),
+              ),
+            ]),
+          ),
+
+        // ── Busca ─────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
           child: AoTextField(
@@ -30,14 +60,17 @@ class InventoryScreen extends StatelessWidget {
             onChanged:  prov.setSearch,
           ),
         ),
+
+        // ── Lista ─────────────────────────────────────────────
         Expanded(
           child: prov.loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: CircularProgressIndicator(
+                  color: AppColors.vermelho))
               : prov.items.isEmpty
-                  ? _Empty()
+                  ? _Empty(canEdit: auth.canEdit)
                   : ListView.builder(
-                      padding:    const EdgeInsets.fromLTRB(16, 8, 16, 100),
-                      itemCount:  prov.items.length,
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                      itemCount: prov.items.length,
                       itemBuilder: (_, i) => _InventoryCard(
                         item:    prov.items[i],
                         canEdit: auth.canEdit,
@@ -46,11 +79,16 @@ class InventoryScreen extends StatelessWidget {
                     ),
         ),
       ]),
+
+      // ── FAB — apenas Estoquista/Admin ─────────────────────────
       floatingActionButton: auth.canEdit
           ? FloatingActionButton.extended(
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(
                       builder: (_) => const InventoryFormScreen())),
+              backgroundColor: AppColors.vermelho,
+              foregroundColor: Colors.white,
+              elevation: 2,
               icon:  const Icon(Icons.add),
               label: Text(AppStrings.addInventory,
                   style: GoogleFonts.publicSans(fontWeight: FontWeight.w600)),
@@ -60,11 +98,15 @@ class InventoryScreen extends StatelessWidget {
   }
 }
 
+// ── Card de item de estoque ───────────────────────────────────
 class _InventoryCard extends StatelessWidget {
   final InventoryModel item;
   final bool canEdit, isAdmin;
-  const _InventoryCard({required this.item,
-      required this.canEdit, required this.isAdmin});
+  const _InventoryCard({
+    required this.item,
+    required this.canEdit,
+    required this.isAdmin,
+  });
 
   Color get _statusColor {
     if (item.isExpired || item.isEmpty) return AppColors.vermelho;
@@ -87,12 +129,13 @@ class _InventoryCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color:        Theme.of(context).cardTheme.color,
+        color: Theme.of(context).cardTheme.color,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
             color: isDark ? AppColors.darkBorder : AppColors.lightBorder),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+
         // Cabeçalho
         Row(children: [
           Expanded(child: Text(item.productName ?? 'Produto',
@@ -111,8 +154,8 @@ class _InventoryCard extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value:      item.stockPercent,
-            minHeight:  5,
+            value:        item.stockPercent,
+            minHeight:    5,
             backgroundColor:
                 isDark ? AppColors.darkBorder : AppColors.lightBorder,
             valueColor: AlwaysStoppedAnimation(_statusColor),
@@ -133,29 +176,37 @@ class _InventoryCard extends StatelessWidget {
           ],
         ]),
 
-        // Ações
+        // ── Ações — apenas Estoquista/Admin ──────────────────
         if (canEdit) ...[
           const SizedBox(height: 10),
           Divider(height: 1,
               color: isDark ? AppColors.darkDivider : AppColors.lightDivider),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Row(children: [
+
+            // Editar
             _ActionBtn(
               label: AppStrings.edit,
               icon:  Icons.edit_outlined,
-              onTap: () => Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => InventoryFormScreen(item: item))),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (_) => InventoryFormScreen(item: item))),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
+
+            // Registrar Baixa
             _ActionBtn(
-              label: 'Baixa',
+              label: 'Registrar Baixa',
               icon:  Icons.trending_down_rounded,
               color: AppColors.vermelho,
-              onTap: () => Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => StockOutFormScreen(item: item))),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (_) => StockOutFormScreen(item: item))),
             ),
+
+            // Excluir — apenas Admin
             if (isAdmin) ...[
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               _ActionBtn(
                 label: AppStrings.delete,
                 icon:  Icons.delete_outline,
@@ -174,24 +225,29 @@ class _InventoryCard extends StatelessWidget {
   }
 
   Future<bool> _confirmDelete(BuildContext ctx) async {
-    final r = await showDialog<bool>(context: ctx, builder: (_) => AlertDialog(
-      title:   const Text(AppStrings.confirmDelete),
-      content: const Text(AppStrings.undoneAction),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(_, false),
+    final r = await showDialog<bool>(
+      context: ctx,
+      builder: (_) => AlertDialog(
+        title:   const Text(AppStrings.confirmDelete),
+        content: const Text(AppStrings.undoneAction),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(_, false),
             child: const Text(AppStrings.cancel)),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.vermelho,
-              foregroundColor: Colors.white),
-          onPressed: () => Navigator.pop(_, true),
-          child: const Text(AppStrings.delete)),
-      ],
-    ));
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.vermelho,
+                foregroundColor: Colors.white),
+            onPressed: () => Navigator.pop(_, true),
+            child: const Text(AppStrings.delete)),
+        ],
+      ),
+    );
     return r ?? false;
   }
 }
 
+// ── Widgets auxiliares ─────────────────────────────────────────
 class _StatusChip extends StatelessWidget {
   final String label; final Color color;
   const _StatusChip({required this.label, required this.color});
@@ -226,34 +282,42 @@ class _Metric extends StatelessWidget {
 class _ActionBtn extends StatelessWidget {
   final String label; final IconData icon;
   final Color? color; final VoidCallback onTap;
-  const _ActionBtn({required this.label, required this.icon,
-      this.color, required this.onTap});
+  const _ActionBtn({
+    required this.label, required this.icon,
+    this.color, required this.onTap,
+  });
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: onTap,
     child: Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(icon, size: 14,
-          color: color ??
-              Theme.of(context).textTheme.bodyMedium?.color),
+          color: color ?? Theme.of(context).textTheme.bodyMedium?.color),
       const SizedBox(width: 3),
       Text(label, style: GoogleFonts.publicSans(fontSize: 12,
           fontWeight: FontWeight.w500,
-          color: color ??
-              Theme.of(context).textTheme.bodyMedium?.color)),
+          color: color ?? Theme.of(context).textTheme.bodyMedium?.color)),
     ]),
   );
 }
 
 class _Empty extends StatelessWidget {
+  final bool canEdit;
+  const _Empty({required this.canEdit});
   @override
   Widget build(BuildContext context) => Center(
     child: Column(mainAxisSize: MainAxisSize.min, children: [
       const Icon(Icons.warehouse_outlined,
           size: 52, color: AppColors.perola),
       const SizedBox(height: 12),
-      Text(AppStrings.noInventory, style: GoogleFonts.publicSans(
-          fontSize: 13,
-          color: Theme.of(context).textTheme.bodyMedium?.color)),
+      Text(AppStrings.noInventory,
+        style: GoogleFonts.publicSans(fontSize: 13,
+            color: Theme.of(context).textTheme.bodyMedium?.color)),
+      if (canEdit) ...[
+        const SizedBox(height: 8),
+        Text('Toque no botão + para adicionar ao estoque.',
+          style: GoogleFonts.publicSans(fontSize: 12,
+              color: AppColors.vermelho)),
+      ],
     ]),
   );
 }

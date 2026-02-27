@@ -34,3 +34,5 @@ flutter:
   assets:
     - assets/images/brick_wall.png
     - assets/images/logo.png
+    - assets/images/lock.png
+    - assets/images/lock_refresh.png

@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 
-/// Botão para telas de autenticação — variante sólida ou outlined
 class AuthButton extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
-  final bool outlined;
-  final bool loading;
+  final bool outlined, loading;
 
   const AuthButton({
     super.key,
@@ -19,6 +17,9 @@ class AuthButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final style = GoogleFonts.publicSans(fontSize: 15, fontWeight: FontWeight.w600);
+    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(8));
+
     if (outlined) {
       return SizedBox(
         width: double.infinity, height: 52,
@@ -27,11 +28,8 @@ class AuthButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.vermelho,
             side: const BorderSide(color: AppColors.vermelho, width: 1.5),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8))),
-          child: Text(label,
-            style: GoogleFonts.publicSans(
-                fontSize: 15, fontWeight: FontWeight.w600)),
+            shape: shape),
+          child: Text(label, style: style),
         ),
       );
     }
@@ -42,16 +40,11 @@ class AuthButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.vermelho,
           foregroundColor: Colors.white,
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8))),
+          elevation: 0, shape: shape),
         child: loading
             ? const SizedBox(width: 20, height: 20,
-                child: CircularProgressIndicator(
-                    strokeWidth: 2, color: Colors.white))
-            : Text(label,
-                style: GoogleFonts.publicSans(
-                    fontSize: 15, fontWeight: FontWeight.w600)),
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+            : Text(label, style: style),
       ),
     );
   }

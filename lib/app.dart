@@ -10,6 +10,8 @@ import 'providers/stock_out_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
+import 'screens/auth/forgot_password_screen.dart';
+import 'screens/auth/reset_password_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/splash/splash_screen.dart';
 
@@ -36,10 +38,12 @@ class App extends StatelessWidget {
           locale:                      const Locale('pt', 'BR'),
           initialRoute:                AppRoutes.splash,
           routes: {
-            AppRoutes.splash:   (_) => const SplashScreen(),
-            AppRoutes.login:    (_) => const LoginScreen(),
-            AppRoutes.register: (_) => const RegisterScreen(),
-            AppRoutes.home:     (_) => const HomeScreen(),
+            AppRoutes.splash:          (_) => const SplashScreen(),
+            AppRoutes.login:           (_) => const LoginScreen(),
+            AppRoutes.register:        (_) => const RegisterScreen(),
+            AppRoutes.forgotPassword:  (_) => const ForgotPasswordScreen(),
+            AppRoutes.resetPassword:   (_) => const ResetPasswordScreen(),
+            AppRoutes.home:            (_) => const HomeScreen(),
           },
         ),
       ),
