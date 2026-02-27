@@ -6,9 +6,8 @@ import '../../core/constants/app_routes.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/utils/validators.dart';
 import '../../providers/auth_provider.dart';
-import '../../widgets/common/ao_button.dart';
-import '../../widgets/common/ao_text_field.dart';
-import '../../widgets/common/auth_header.dart';
+import '../../widgets/common/auth_field.dart';
+import '../../widgets/common/auth_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -22,8 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailCtrl = TextEditingController();
   final _passCtrl  = TextEditingController();
   final _pass2Ctrl = TextEditingController();
-  bool _obscure1   = true;
-  bool _obscure2   = true;
+  bool _ob1 = true, _ob2 = true;
 
   @override
   void dispose() {
@@ -45,8 +43,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(auth.error ?? AppStrings.errorGeneric),
-        backgroundColor: AppColors.vermelho));
+          content: Text(auth.error ?? AppStrings.errorGeneric),
+          backgroundColor: AppColors.vermelho));
     }
   }
 
@@ -55,147 +53,131 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final auth      = context.watch<AuthProvider>();
     final isLoading = auth.status == AuthStatus.loading;
     final isDark    = Theme.of(context).brightness == Brightness.dark;
+    final size      = MediaQuery.of(context).size;
 
-    final overlayColor = isDark
-        ? AppColors.azulEscuro02.withOpacity(0.82)
-        : AppColors.offWhite01.withOpacity(0.78);
+    final bg          = isDark ? const Color(0xFF172027) : const Color(0xFFF4F0E5);
+    final fieldBg     = isDark ? const Color(0xFF1B242B) : Colors.white;
+    final fieldBorder = isDark ? const Color(0xFF2C3E47) : const Color(0xFFE0DDD5);
+    final textColor   = isDark ? const Color(0xFFEAE9E4) : const Color(0xFF121212);
+    final hintColor   = isDark ? const Color(0xFF5A6A74) : const Color(0xFF9A9590);
 
     return Scaffold(
-      body: Stack(children: [
-        // Fundo — textura de tijolo
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/brick_wall.png',
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) =>
-                Container(color: isDark ? AppColors.azulEscuro02 : AppColors.offWhite01),
-          ),
+      backgroundColor: bg,
+      body: Column(children: [
+
+        // ── FAIXA DE TIJOLO COM GRADIENTE FADE ──────────────────
+        SizedBox(
+          height: size.height * 0.20,
+          width: double.infinity,
+          child: Stack(fit: StackFit.expand, children: [
+            Image.asset('assets/images/brick_wall.png', fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(color: const Color(0xFFA84020))),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.5, 1.0],
+                  colors: [Colors.transparent, Colors.transparent, bg]))),
+          ]),
         ),
-        // Overlay semitransparente
-        Positioned.fill(child: Container(color: overlayColor)),
-        // Conteúdo
-        SafeArea(
+
+        // ── CONTEÚDO ────────────────────────────────────────────
+        Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 28),
             child: Form(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 52),
-                  const AuthHeader(),
-                  const SizedBox(height: 40),
-                  Text(AppStrings.register,
-                    style: Theme.of(context).textTheme.displayMedium),
+                  Image.asset('assets/images/logo.png', height: 52,
+                    errorBuilder: (_, __, ___) => const Icon(
+                        Icons.home_repair_service_rounded,
+                        color: AppColors.vermelho, size: 52)),
+                  const SizedBox(height: 10),
+
+                  Text('Cadastro',
+                    style: GoogleFonts.publicSans(
+                      fontSize: 20, fontWeight: FontWeight.w700, color: textColor)),
                   const SizedBox(height: 24),
-                  // Nome
-                  AoTextField(
-                    label: AppStrings.name,
-                    controller: _nameCtrl,
+
+                  AuthField(
+                    hint: 'Digite seu nome', controller: _nameCtrl,
                     validator: Validators.required,
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 14),
-                  // E-mail
-                  AoTextField(
-                    label: AppStrings.email,
-                    controller: _emailCtrl,
-                    validator: Validators.email,
-                    keyboardType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                  ),
-                  const SizedBox(height: 14),
-                  // Senha
-                  AoTextField(
-                    label: AppStrings.password,
-                    controller: _passCtrl,
-                    validator: Validators.password,
-                    obscureText: _obscure1,
-                    textInputAction: TextInputAction.next,
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscure1
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined, size: 20),
-                      onPressed: () => setState(() => _obscure1 = !_obscure1),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  // Confirmar senha
-                  AoTextField(
-                    label: AppStrings.confirmPassword,
-                    controller: _pass2Ctrl,
-                    validator: Validators.confirmPassword(_passCtrl.text),
-                    obscureText: _obscure2,
-                    textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => _register(),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscure2
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined, size: 20),
-                      onPressed: () => setState(() => _obscure2 = !_obscure2),
-                    ),
+                    action: TextInputAction.next,
+                    suffix: Icon(Icons.person_outline, size: 18, color: hintColor),
+                    bg: fieldBg, border: fieldBorder,
+                    textColor: textColor, hintColor: hintColor,
                   ),
                   const SizedBox(height: 12),
-                  _InfoBox(),
-                  const SizedBox(height: 24),
-                  AoButton(
-                    label: AppStrings.criarConta,
-                    onPressed: _register,
-                    loading: isLoading,
+
+                  AuthField(
+                    hint: 'Insira seu e-mail', controller: _emailCtrl,
+                    validator: Validators.email,
+                    keyboard: TextInputType.emailAddress,
+                    action: TextInputAction.next,
+                    suffix: Icon(Icons.email_outlined, size: 18, color: hintColor),
+                    bg: fieldBg, border: fieldBorder,
+                    textColor: textColor, hintColor: hintColor,
                   ),
-                  const SizedBox(height: 32),
-                  Center(
+                  const SizedBox(height: 12),
+
+                  AuthField(
+                    hint: 'Digite sua Senha', controller: _passCtrl,
+                    validator: Validators.password,
+                    obscure: _ob1, action: TextInputAction.next,
+                    suffix: GestureDetector(
+                      onTap: () => setState(() => _ob1 = !_ob1),
+                      child: Icon(
+                        _ob1 ? Icons.lock_outline : Icons.lock_open_outlined,
+                        size: 18, color: hintColor)),
+                    bg: fieldBg, border: fieldBorder,
+                    textColor: textColor, hintColor: hintColor,
+                  ),
+                  const SizedBox(height: 12),
+
+                  AuthField(
+                    hint: 'Repita sua Senha', controller: _pass2Ctrl,
+                    validator: Validators.confirmPassword(_passCtrl.text),
+                    obscure: _ob2, action: TextInputAction.done,
+                    onSubmit: (_) => _register(),
+                    suffix: GestureDetector(
+                      onTap: () => setState(() => _ob2 = !_ob2),
+                      child: Icon(
+                        _ob2 ? Icons.lock_outline : Icons.lock_open_outlined,
+                        size: 18, color: hintColor)),
+                    bg: fieldBg, border: fieldBorder,
+                    textColor: textColor, hintColor: hintColor,
+                  ),
+                  const SizedBox(height: 20),
+
+                  AuthButton(
+                    label: 'Criar conta',
+                    onTap: isLoading ? null : _register,
+                    loading: isLoading),
+                  const SizedBox(height: 20),
+
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
                     child: RichText(
+                      textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: GoogleFonts.publicSans(fontSize: 13,
-                          color: Theme.of(context).textTheme.bodyMedium?.color),
+                        style: GoogleFonts.publicSans(
+                            fontSize: 13, color: hintColor),
                         children: [
-                          const TextSpan(text: AppStrings.hasAccount),
-                          WidgetSpan(
-                            child: GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Text(AppStrings.doLogin,
-                                style: GoogleFonts.publicSans(
-                                  fontSize: 13, fontWeight: FontWeight.w600,
-                                  color: AppColors.vermelho)),
-                            ),
-                          ),
+                          const TextSpan(text: 'Já possui uma conta? '),
+                          TextSpan(text: 'Realize o login',
+                            style: GoogleFonts.publicSans(
+                              fontSize: 13, fontWeight: FontWeight.w600,
+                              color: AppColors.vermelho)),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
-          ),
-        ),
-      ]),
-    );
-  }
-}
-
-class _InfoBox extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color:        AppColors.azulArdosia.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(8),
-        border:       Border.all(color: AppColors.azulArdosia.withOpacity(0.2)),
-      ),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Icon(Icons.info_outline, size: 16, color: AppColors.azulArdosia),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            'Novas contas recebem acesso de Leitor. '
-            'Um Administrador poderá alterar suas permissões.',
-            style: GoogleFonts.publicSans(
-              fontSize: 12, fontWeight: FontWeight.w300,
-              color: AppColors.azulArdosia),
           ),
         ),
       ]),

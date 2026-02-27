@@ -11,11 +11,20 @@ extension UserRoleX on UserRole {
     }
   }
 
+  //
+  String get firestoreValue {
+    switch (this) {
+      case UserRole.leitor:        return 'LEITOR';
+      case UserRole.estoquista:    return 'ESTOQUISTA';
+      case UserRole.administrador: return 'ADMIN';
+    }
+  }
+
   static UserRole fromString(String? v) {
-    switch (v) {
-      case 'estoquista':    return UserRole.estoquista;
-      case 'administrador': return UserRole.administrador;
-      default:              return UserRole.leitor;
+    switch (v?.toUpperCase()) {
+      case 'ESTOQUISTA': return UserRole.estoquista;
+      case 'ADMIN':      return UserRole.administrador;
+      default:           return UserRole.leitor;
     }
   }
 }
@@ -26,9 +35,9 @@ class UserModel {
   final String    email;
   final UserRole  role;
   final String?   employeeCode;
-  final bool      isActive;       
+  final bool      isActive;
   final DateTime? passwordChanged;
-  final String?   passwordReset;   
+  final String?   passwordReset;
   final DateTime? createdAt;
 
   const UserModel({
@@ -42,7 +51,6 @@ class UserModel {
     this.passwordReset,
     this.createdAt,
   });
-
 
   bool get isAdmin      => role == UserRole.administrador;
   bool get isEstoquista => role == UserRole.estoquista || isAdmin;
@@ -69,7 +77,7 @@ class UserModel {
     return {
       'name':            name,
       'email':           email,
-      'role':            role.name,
+      'role':            role.firestoreValue, 
       'employeeCode':    employeeCode,
       'isActive':        isActive,
       'passwordChanged': pc != null ? Timestamp.fromDate(pc) : null,

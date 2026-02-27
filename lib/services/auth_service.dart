@@ -6,17 +6,32 @@ class AuthService {
   final _auth      = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
+  // ── Coleção correta conforme Firebase rules ───────────────────
+  CollectionReference get _users => _firestore.collection('usuarios');
+
   User? get currentFirebaseUser => _auth.currentUser;
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Gera código de crachá sequencial — ex: AO0001, AO0002...
+  // Gera código de crachá usando o contador do Firestore (config/employeeCounter)
   Future<String> _generateEmployeeCode() async {
-    final snap  = await _firestore.collection('users').get();
-    final count = snap.docs.length + 1;
-    return 'AO${count.toString().padLeft(4, '0')}';
+    final counterRef = _firestore.collection('config').doc('employeeCounter');
+    late String code;
+
+    await _firestore.runTransaction((tx) async {
+      final snap = await tx.get(counterRef);
+      int ultimo = 0;
+      if (snap.exists) {
+        ultimo = (snap.data() as Map<String, dynamic>)['ultimoCodigo'] ?? 0;
+      }
+      final proximo = ultimo + 1;
+      tx.set(counterRef, {'ultimoCodigo': proximo}, SetOptions(merge: true));
+      code = 'AO${proximo.toString().padLeft(4, '0')}';
+    });
+
+    return code;
   }
 
-  // ── Cadastro ─────────────────────────────────────────────────
+  // ── Cadastro ──────────────────────────────────────────────────
   Future<UserModel> register({
     required String name,
     required String email,
@@ -32,12 +47,13 @@ class AuthService {
       id:           uid,
       name:         name,
       email:        email,
-      role:         UserRole.leitor, // novos usuários sempre começam como Leitor
+      role:         UserRole.leitor,
       employeeCode: code,
       isActive:     true,
       createdAt:    now,
     );
-    await _firestore.collection('users').doc(uid).set(user.toMap());
+
+    await _users.doc(uid).set(user.toMap());
     return user;
   }
 
@@ -62,54 +78,39 @@ class AuthService {
   Future<UserModel> getUser() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) throw Exception('Não autenticado');
-    final doc = await _firestore.collection('users').doc(uid).get();
+    final doc = await _users.doc(uid).get();
     if (!doc.exists) throw Exception('Usuário não encontrado');
     return UserModel.fromFirestore(doc);
   }
 
   // ── Redefinição de senha ──────────────────────────────────────
-  // Envia e-mail e salva o código no Firestore (campo passwordReset)
   Future<void> sendPasswordReset(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
-
-    final snap = await _firestore
-        .collection('users')
+    final snap = await _users
         .where('email', isEqualTo: email)
         .limit(1)
         .get();
-
     if (snap.docs.isNotEmpty) {
       final code = 'RESET_${DateTime.now().millisecondsSinceEpoch}';
       await snap.docs.first.reference.update({'passwordReset': code});
     }
   }
 
-  // Limpa o código de reset após nova senha definida
-  Future<void> clearPasswordReset(String userId) async {
-    await _firestore.collection('users').doc(userId).update({
-      'passwordReset':   null,
-      'passwordChanged': Timestamp.fromDate(DateTime.now()),
-    });
-  }
-
-  // ── Admin: listar todos os usuários ──────────────────────────
+  // ── Admin: listar todos ───────────────────────────────────────
   Future<List<UserModel>> getAllUsers() async {
-    final snap = await _firestore
-        .collection('users')
-        .orderBy('name')
-        .get();
+    final snap = await _users.orderBy('name').get();
     return snap.docs.map(UserModel.fromFirestore).toList();
   }
 
   // ── Admin: alterar role ───────────────────────────────────────
   Future<void> updateRole(String userId, UserRole role) =>
-      _firestore.collection('users').doc(userId).update({'role': role.name});
+      _users.doc(userId).update({'role': role.firestoreValue});
 
-  // ── Admin: ativar/desativar conta ─────────────────────────────
+  // ── Admin: ativar/desativar ───────────────────────────────────
   Future<void> setActive(String userId, bool active) =>
-      _firestore.collection('users').doc(userId).update({'isActive': active});
+      _users.doc(userId).update({'isActive': active});
 
-  // ── Editar nome próprio ───────────────────────────────────────
+  // ── Editar nome ───────────────────────────────────────────────
   Future<void> updateName(String userId, String name) =>
-      _firestore.collection('users').doc(userId).update({'name': name});
+      _users.doc(userId).update({'name': name});
 }
