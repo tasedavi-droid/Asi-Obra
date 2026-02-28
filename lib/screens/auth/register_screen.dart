@@ -8,6 +8,7 @@ import '../../core/utils/validators.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/auth_field.dart';
 import '../../widgets/common/auth_button.dart';
+import '../../widgets/common/brick_header.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -54,7 +55,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final auth      = context.watch<AuthProvider>();
     final isLoading = auth.status == AuthStatus.loading;
     final isDark    = Theme.of(context).brightness == Brightness.dark;
-    final size      = MediaQuery.of(context).size;
 
     final bg          = isDark ? const Color(0xFF1B242B) : const Color(0xFFF4F0E5);
     final fieldBg     = isDark ? const Color(0xFF1F2B33) : Colors.white;
@@ -66,39 +66,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: bg,
       body: Column(children: [
-        SizedBox(
-          height: size.height * 0.30,
-          width: double.infinity,
-          child: Stack(fit: StackFit.expand, children: [
-            Image.asset('assets/images/brick_wall.png', fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  Container(color: const Color(0xFFA84020))),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end:   Alignment.bottomCenter,
-                  stops: const [0.0, 0.30, 0.75, 1.0],
-                  colors: [
-                    Colors.transparent,
-                    Colors.transparent,
-                    bg.withOpacity(0.70),
-                    bg,
-                  ]))),
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: Icon(Icons.arrow_back_ios_new_rounded,
-                      color: Colors.white.withOpacity(0.90), size: 20)),
-                ),
-              ),
-            ),
-          ]),
+
+        BrickHeader(
+          heightFactor: 0.26,
+          topLeft: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back_ios_new_rounded,
+              color: Colors.white.withOpacity(0.90), size: 20)),
         ),
+
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -119,7 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 20),
 
                   AuthField(hint: 'Digite seu nome', controller: _nameCtrl,
-                    validator: Validators.required, action: TextInputAction.next,
+                    validator: Validators.required,
                     suffix: Icon(Icons.person_outline, size: 18, color: hintColor),
                     bg: fieldBg, border: fieldBorder,
                     textColor: textColor, hintColor: hintColor, glowColor: glowColor),
@@ -128,7 +104,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   AuthField(hint: 'Insira seu e-mail', controller: _emailCtrl,
                     validator: Validators.email,
                     keyboard: TextInputType.emailAddress,
-                    action: TextInputAction.next,
                     suffix: Icon(Icons.email_outlined, size: 18, color: hintColor),
                     bg: fieldBg, border: fieldBorder,
                     textColor: textColor, hintColor: hintColor, glowColor: glowColor),
@@ -166,8 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
-                        style: GoogleFonts.publicSans(
-                          fontSize: 13, color: hintColor),
+                        style: GoogleFonts.publicSans(fontSize: 13, color: hintColor),
                         children: [
                           const TextSpan(text: 'Já possui uma conta? '),
                           TextSpan(text: 'Realize o login',

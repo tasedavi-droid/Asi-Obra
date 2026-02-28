@@ -3,20 +3,23 @@ import '../models/stock_out_model.dart';
 import 'inventory_service.dart';
 
 class StockOutService {
-  final _col             = FirebaseFirestore.instance.collection('stockouts');
+  final _col              = FirebaseFirestore.instance.collection('registro_baixas');
   final _inventoryService = InventoryService();
 
+  // Todas as baixas
   Stream<List<StockOutModel>> watchAll() => _col
       .orderBy('date', descending: true)
       .snapshots()
       .map((s) => s.docs.map(StockOutModel.fromFirestore).toList());
 
+  // Baixas de um lote específico
   Stream<List<StockOutModel>> watchByItem(String itemId) => _col
       .where('inventoryItemId', isEqualTo: itemId)
       .orderBy('date', descending: true)
       .snapshots()
       .map((s) => s.docs.map(StockOutModel.fromFirestore).toList());
 
+  // Registrar baixa + decrementar estoque
   Future<StockOutModel> register(StockOutModel so) async {
     final ref = await _col.add(so.toMap());
     await _inventoryService.decreaseQuantity(so.inventoryItemId, so.quantity);

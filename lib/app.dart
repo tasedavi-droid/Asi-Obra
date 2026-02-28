@@ -11,7 +11,6 @@ import 'providers/theme_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/register_screen.dart';
 import 'screens/auth/forgot_password_screen.dart';
-import 'screens/auth/reset_password_screen.dart';
 import 'screens/home/home_screen.dart';
 import 'screens/splash/splash_screen.dart';
 
@@ -30,20 +29,19 @@ class App extends StatelessWidget {
       ],
       child: Consumer<ThemeProvider>(
         builder: (_, tp, __) => MaterialApp(
-          title:                       AppStrings.appName,
-          debugShowCheckedModeBanner:  false,
-          theme:                       AppTheme.light,
-          darkTheme:                   AppTheme.dark,
-          themeMode:                   tp.mode,
-          locale:                      const Locale('pt', 'BR'),
-          initialRoute:                AppRoutes.splash,
+          title:                      AppStrings.appName,
+          debugShowCheckedModeBanner: false,
+          theme:                      AppTheme.light,
+          darkTheme:                  AppTheme.dark,
+          themeMode:                  tp.mode,
+          locale:                     const Locale('pt', 'BR'),
+          initialRoute:               AppRoutes.splash,
           routes: {
-            AppRoutes.splash:          (_) => const SplashScreen(),
-            AppRoutes.login:           (_) => const LoginScreen(),
-            AppRoutes.register:        (_) => const RegisterScreen(),
-            AppRoutes.forgotPassword:  (_) => const ForgotPasswordScreen(),
-            AppRoutes.resetPassword:   (_) => const ResetPasswordScreen(),
-            AppRoutes.home:            (_) => const HomeScreen(),
+            AppRoutes.splash:         (_) => const SplashScreen(),
+            AppRoutes.login:          (_) => const LoginScreen(),
+            AppRoutes.register:       (_) => const RegisterScreen(),
+            AppRoutes.forgotPassword: (_) => const ForgotPasswordScreen(),
+            AppRoutes.home:           (_) => const HomeScreen(),
           },
         ),
       ),

@@ -83,16 +83,49 @@ class AuthService {
     return UserModel.fromFirestore(doc);
   }
 
+  // ── Verifica se e-mail existe na coleção usuarios ─────────────
+  // Equivalente ao verificarEmailExiste() do desktop (Angular/AngularFire).
+  // Usado antes de enviar o link de redefinição para evitar envio
+  // para e-mails não cadastrados.
+  Future<bool> verificarEmailExiste(String email) async {
+    try {
+      final snapshot = await _users
+          .where('email', isEqualTo: email.trim())
+          .limit(1)
+          .get();
+      return snapshot.docs.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
   // ── Redefinição de senha ──────────────────────────────────────
+  // 1. Chama verificarEmailExiste (igual ao desktop) antes de enviar
+  // 2. Se não existe → lança exceção com mensagem traduzida
+  // 3. Se existe → Firebase envia o e-mail (resetPassword do desktop)
+  // 4. Registra token no campo passwordReset do usuário para auditoria
   Future<void> sendPasswordReset(String email) async {
-    await _auth.sendPasswordResetEmail(email: email);
-    final snap = await _users
-        .where('email', isEqualTo: email)
-        .limit(1)
-        .get();
-    if (snap.docs.isNotEmpty) {
-      final code = 'RESET_${DateTime.now().millisecondsSinceEpoch}';
-      await snap.docs.first.reference.update({'passwordReset': code});
+    // 1. Verifica existência (verificarEmailExiste do desktop)
+    final existe = await verificarEmailExiste(email);
+    if (!existe) {
+      throw Exception('email-not-found');
+    }
+
+    // 2. Envia link via Firebase Auth (resetPassword do desktop)
+    await _auth.sendPasswordResetEmail(email: email.trim());
+
+    // 3. Registra token de auditoria no Firestore
+    try {
+      final snap = await _users
+          .where('email', isEqualTo: email.trim())
+          .limit(1)
+          .get();
+      if (snap.docs.isNotEmpty) {
+        final code = 'RESET_${DateTime.now().millisecondsSinceEpoch}';
+        await snap.docs.first.reference.update({'passwordReset': code});
+      }
+    } catch (_) {
+      // Falha no registro de auditoria não interrompe o fluxo principal
     }
   }
 

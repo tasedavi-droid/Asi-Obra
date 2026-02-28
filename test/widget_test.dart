@@ -28,3 +28,14 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 }
+
+// RECUPERAR SENHA
+  resetPassword(email: string) {
+    return this.afAuth.sendPasswordResetEmail(email);
+  }
+
+  // Adicione este método no auth.service.ts
+  async verificarEmailExiste(email: string): Promise<boolean> {
+    const snapshot = await this.firestore.collection('usuarios', ref => ref.where('email', '==', email)).get().toPromise();
+    return !snapshot?.empty;
+  }

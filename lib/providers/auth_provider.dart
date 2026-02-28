@@ -18,7 +18,6 @@ class AuthProvider extends ChangeNotifier {
   bool get isAdmin           => _user?.isAdmin ?? false;
   bool get canEdit           => _user?.canEdit ?? false;
 
-  // Chamado na splash para verificar se há sessão ativa
   Future<void> initialize() async {
     _status = AuthStatus.loading;
     notifyListeners();
@@ -57,7 +56,8 @@ class AuthProvider extends ChangeNotifier {
     _error  = null;
     notifyListeners();
     try {
-      _user   = await _svc.register(name: name, email: email, password: password);
+      _user   = await _svc.register(
+          name: name, email: email, password: password);
       _status = AuthStatus.authenticated;
       notifyListeners();
       return true;
@@ -76,12 +76,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> sendPasswordReset(String email) async {
+  // Retorna null em caso de sucesso ou a mensagem de erro traduzida.
+  // A ForgotPasswordScreen usa o retorno para decidir se navega ou mostra erro.
+  Future<String?> sendPasswordReset(String email) async {
     try {
       await _svc.sendPasswordReset(email);
-      return true;
-    } catch (_) {
-      return false;
+      return null; // sucesso
+    } on Exception catch (e) {
+      return _mapError(e.toString());
     }
   }
 
@@ -100,12 +102,13 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Traduz erros do Firebase Auth para pt-BR
   String _mapError(String e) {
     if (e.contains('user-not-found') ||
         e.contains('wrong-password') ||
         e.contains('invalid-credential'))
       return 'E-mail ou senha incorretos.';
+    if (e.contains('email-not-found'))
+      return 'E-mail não encontrado. Verifique e tente novamente.';
     if (e.contains('email-already-in-use'))
       return 'Este e-mail já está cadastrado.';
     if (e.contains('weak-password'))
