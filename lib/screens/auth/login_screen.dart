@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Column(
         children: [
 
-          // ── CABEÇALHO TIJOLO ─────────────────────────────────
+    
           BrickHeader(
             heightFactor: 0.26,
             topRight: GestureDetector(
@@ -78,7 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // ── CONTEÚDO CENTRALIZADO VERTICALMENTE ─────────────
           Expanded(
             child: Center(
               child: SingleChildScrollView(
@@ -90,14 +89,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
 
-                      // Ícone
+                    
                       Image.asset('assets/images/logo.png', height: 80,
                         errorBuilder: (_, __, ___) => Icon(
                           Icons.home_repair_service_rounded,
                           color: AppColors.vermelho, size: 80)),
                       const SizedBox(height: 2),
 
-                      // Bem vindo ao / Asi & Obra!
+                      
                       RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -113,7 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 28),
 
-                      // E-mail
+                    
                       AuthField(
                         hint: 'Insira seu e-mail', controller: _emailCtrl,
                         validator: Validators.email,
@@ -125,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         glowColor: glowColor),
                       const SizedBox(height: 14),
 
-                      // Senha
+                      
                       AuthField(
                         hint: 'Digite sua Senha', controller: _passCtrl,
                         validator: Validators.password,
@@ -141,17 +140,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         glowColor: glowColor),
                       const SizedBox(height: 24),
 
-                      // Login
+                      
                       AuthButton(label: 'Login',
                         onTap: isLoading ? null : _login, loading: isLoading),
                       const SizedBox(height: 12),
 
-                      // Cadastrar
+                      
                       AuthButton(label: 'Cadastrar', outlined: true,
                         onTap: () => Navigator.pushNamed(context, AppRoutes.register)),
                       const SizedBox(height: 20),
 
-                      // Esqueci minha senha
+                      
                       GestureDetector(
                         onTap: () => Navigator.pushNamed(context, AppRoutes.forgotPassword),
                         child: Text('Esqueci minha senha',

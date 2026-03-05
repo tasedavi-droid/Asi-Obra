@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class BrickHeader extends StatelessWidget {
   final double heightFactor;
 
-  /// Widget no canto superior esquerdo 
   final Widget? topLeft;
 
 
@@ -41,7 +40,6 @@ class BrickHeader extends StatelessWidget {
                   : const Color(0xFFB97050)),
           ),
 
-          // Botões de navegação sobrepostos
           if (topLeft != null || topRight != null)
             SafeArea(
               child: Padding(

@@ -28,7 +28,7 @@ class AuthHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        // "Bem vindo ao" normal + "Asi & Obra!" em vermelho
+
         RichText(
           text: TextSpan(
             style: GoogleFonts.publicSans(

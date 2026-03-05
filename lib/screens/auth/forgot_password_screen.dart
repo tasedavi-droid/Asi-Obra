@@ -34,7 +34,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     setState(() => _loading = false);
 
     if (error == null) {
-      // Sucesso — mostra estado de confirmação sem navegar para nova tela
       setState(() => _sent = true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -75,7 +74,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               children: [
                 const SizedBox(height: 4),
 
-                // Ícone cadeado
+                // Ícone c
                 Image.asset('assets/images/lock.png',
                   height: 110, color: AppColors.vermelho,
                   errorBuilder: (_, __, ___) => const Icon(
@@ -98,7 +97,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     height: 1.55, color: subColor)),
                 const SizedBox(height: 28),
 
-                // ── Estado de sucesso (após envio) ────────────
+    
                 if (_sent) ...[
                   Container(
                     width: double.infinity,
@@ -133,7 +132,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     onTap: () => Navigator.pop(context)),
                 ]
 
-                // ── Formulário de e-mail ───────────────────────
+        
                 else ...[
                   Form(
                     key: _formKey,

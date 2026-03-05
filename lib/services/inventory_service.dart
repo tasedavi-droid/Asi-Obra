@@ -4,13 +4,13 @@ import '../models/inventory_model.dart';
 class InventoryService {
   final _col = FirebaseFirestore.instance.collection('estoque');
 
-  // Escuta em tempo real
+  
   Stream<List<InventoryModel>> watchAll() => _col
       .orderBy('updatedAt', descending: true)
       .snapshots()
       .map((s) => s.docs.map(InventoryModel.fromFirestore).toList());
 
-  // Criar lote
+  
   Future<InventoryModel> create(InventoryModel item) async {
     final now  = DateTime.now();
     final data = item.copyWith(createdAt: now, updatedAt: now);
@@ -18,11 +18,11 @@ class InventoryService {
     return data.copyWith(id: ref.id);
   }
 
-  // Editar lote
+  
   Future<void> update(InventoryModel item) =>
       _col.doc(item.id).update(item.copyWith(updatedAt: DateTime.now()).toMap());
 
-  // Decrementar quantidade via transação atômica 
+  
   Future<void> decreaseQuantity(String itemId, int amount) async {
     await FirebaseFirestore.instance.runTransaction((tx) async {
       final ref  = _col.doc(itemId);

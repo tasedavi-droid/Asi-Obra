@@ -76,8 +76,6 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Retorna null em caso de sucesso ou a mensagem de erro traduzida.
-  // A ForgotPasswordScreen usa o retorno para decidir se navega ou mostra erro.
   Future<String?> sendPasswordReset(String email) async {
     try {
       await _svc.sendPasswordReset(email);
